@@ -20,6 +20,13 @@ public class Token {
 	 */
 	private String errorMessage;
 
+	public Token(String type, String content, String errorMessage) {
+		super();
+		this.type = type;
+		this.content = content;
+		this.errorMessage = errorMessage;
+	}
+
 	public String getType() {
 		return type;
 	}
