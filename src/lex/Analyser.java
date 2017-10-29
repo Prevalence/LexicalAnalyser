@@ -126,7 +126,34 @@ public class Analyser {
 	}
 
 	/**
-	 * 判断当前状态是否是终态，表中终态都设置一个偏移量为500
+	 * 参照终态的值来判断Token的类型，输出内容
+	 * 
+	 * @param currentState
+	 */
+	private static void output(int currentState, String tempContent) {
+		Token token = null;
+		if (currentState == 501) {
+			if (isReveredWords(tempContent)) {
+				token = new Token("ReversedWords", tempContent, "none");
+			} else {
+				token = new Token("ID", tempContent, "none");
+			}
+
+		} else if (currentState == 502) {
+			if (isReveredWords(tempContent)) {
+				token = new Token("ReversedWords", tempContent, "none");
+			} else {
+				token = new Token("ID", tempContent, "none");
+			}
+		} else if (currentState == 503)
+			token = new Token("signal", tempContent, "none");
+		assert (token != null);
+		System.out.println("Token{type: " + token.getType() + " content: " + token.getContent() + " error: "
+				+ token.getErrorMessage());
+	}
+
+	/**
+	 * 判断当前状态是否是终态，表中终态都设置一个偏移量为500,例如,对于第四行的状态,号码为503
 	 * 
 	 * @param currentState
 	 *            当前状态
@@ -168,30 +195,31 @@ public class Analyser {
 	}
 
 	/**
-	 * 参照终态的值来判断Token的类型，输出内容，并且将tempContainer重置
+	 * 是否为操作符
 	 * 
-	 * @param currentState
+	 * @param tempContent
+	 * @return
 	 */
-	private static void output(int currentState, String tempContent) {
-		Token token = null;
-		if (currentState == 501) {
-			if (isReveredWords(tempContent)) {
-				token = new Token("ReversedWords", tempContent, "none");
-			} else {
-				token = new Token("ID", tempContent, "none");
-			}
+	private static boolean isOperators(String tempContent) {
+		for (String s : OPERATORS) {
+			if (s.equals(tempContent))
+				return true;
+		}
+		return false;
+	}
 
-		} else if (currentState == 502) {
-			if (isReveredWords(tempContent)) {
-				token = new Token("ReversedWords", tempContent, "none");
-			} else {
-				token = new Token("ID", tempContent, "none");
-			}
-		} else if (currentState == 503)
-			token = new Token("signal", tempContent, "none");
-		assert (token != null);
-		System.out.println("Token{type: " + token.getType() + " content: " + token.getContent() + " error: "
-				+ token.getErrorMessage());
+	/**
+	 * 是否为标点符号
+	 * 
+	 * @param tempContent
+	 * @return
+	 */
+	private static boolean isPunctuation(String tempContent) {
+		for (String s : PUNCTUATION) {
+			if (s.equals(tempContent))
+				return true;
+		}
+		return false;
 	}
 
 	public static void main(String[] args) {
