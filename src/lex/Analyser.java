@@ -29,15 +29,19 @@ public class Analyser {
 	/**
 	 * 标点符号数组
 	 */
-	private static final String[] PUNCTUATION = { "{", "}", ";", ".", "(", ")", "[", "]", ":", "\"", "," };
+	private static final String[] PUNCTUATION = { "{", "}", ";", "(", ")", "[", "]", ":", "\"", ",", " " };
 
 	/**
 	 * 状态转换表，形式为----------------------------------------------------- | | - | . |
-	 * digit | letter | other -----------------------------------------------------
-	 * | 0 | | 1 | | 2 | | 3 | | | | | | |
+	 * digit | letter | other|-|.
+	 * ----------------------------------------------------- | 0 | | 1 | | 2 | | 3 |
+	 * | | | | | |
 	 * 
 	 */
-	private static final int[][] STATE_TABLE = { { -1, 501, 503 }, { 502, 502, -1 }, { 502, 502, -1 }, { -1, -1, -1 } };
+	private static final int[][] STATE_TABLE = { { 504, 501, 503, 5, -1 }, { 502, 502, -1, -1, -1 },
+			{ 502, 502, -1, -1, -1 }, { -1, -1, -1, -1, -1 }, { 504, -1, -1, -1, 6 }, { 508, -1, -1, -1, -1 },
+			{ 507, -1, -1, -1, -1 }, { 507, -1, -1, -1, -1 }, { 508, -1, -1, -1, 9 }, { 510, -1, -1, -1, -1 },
+			{ 510, -1, -1, -1, -1 } };
 
 	/**
 	 * 读入输入的文件
@@ -117,12 +121,17 @@ public class Analyser {
 		if (currentState > 500) {
 			currentState -= 500;
 		}
-		if (isDigit(currentChar))
+		if (isDigit(currentChar)) {
 			return STATE_TABLE[currentState][0];
-		if (isLetter(currentChar))
+		} else if (isLetter(currentChar)) {
 			return STATE_TABLE[currentState][1];
-		else
+		} else if (currentChar == '-') {
+			return STATE_TABLE[currentState][3];
+		} else if (currentChar == '.') {
+			return STATE_TABLE[currentState][4];
+		} else
 			return STATE_TABLE[currentState][2];
+
 	}
 
 	/**
@@ -145,11 +154,29 @@ public class Analyser {
 			} else {
 				token = new Token("ID", tempContent, "none");
 			}
-		} else if (currentState == 503)
-			token = new Token("signal", tempContent, "none");
+		} else if (currentState == 503) {
+			if (isOperators(tempContent)) {
+				token = new Token("Operators", tempContent, "none");
+			} else if (isPunctuation(tempContent)) {
+				if (tempContent.equals(" "))
+					tempContent = "Space";
+				token = new Token("Punctuation", tempContent, "none");
+			} else {
+				token = new Token("unknown", tempContent, "unknown");
+			}
+		} else if (currentState == 504) {
+			token = new Token("positive Integer", tempContent, "none");
+		} else if (currentState == 507) {
+			token = new Token("positive float", tempContent, "none");
+		} else if (currentState == 505) {
+			token = new Token("negative Integer", tempContent, "none");
+		} else if (currentState == 510) {
+			token = new Token("positive float", tempContent, "none");
+		}
+
 		assert (token != null);
-		System.out.println("Token{type: " + token.getType() + " content: " + token.getContent() + " error: "
-				+ token.getErrorMessage());
+		System.out.println("Token{type: " + token.getType() + "     content: " + token.getContent() + "     error: "
+				+ token.getErrorMessage() + "}");
 	}
 
 	/**
@@ -223,7 +250,7 @@ public class Analyser {
 	}
 
 	public static void main(String[] args) {
-		char[] test = "int i".toCharArray();
+		char[] test = "int int4fsdf=5.658".toCharArray();
 		Analyser.scanCharInFile(test);
 	}
 
