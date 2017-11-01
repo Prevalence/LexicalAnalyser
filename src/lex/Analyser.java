@@ -29,7 +29,7 @@ public class Analyser {
 	/**
 	 * 标点符号数组
 	 */
-	private static final String[] PUNCTUATION = { "{", "}", ";", "(", ")", "[", "]", ":", "\"", ",", " " };
+	private static final String[] PUNCTUATION = { "{", "}", ";", "(", ")", "[", "]", ":", "\"", ",", " ","." };
 
 	/**
 	 * 状态转换表，形式为----------------------------------------------------- | | - | . |
@@ -49,28 +49,25 @@ public class Analyser {
 	 * @param path
 	 *            输入文件路径
 	 */
-	public static char[] readFromFile(String path) {
-		char[] allCharInFile = new char[2000];
-		int index = 0;
+	public static void readFromFile(String path) {
+		ArrayList<Character> allCharInFile=new ArrayList<Character>();
 		try {
 			BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path))));
 			String line = null;
 			while ((line = bf.readLine()) != null) {
 				char[] charInOneLine = line.toCharArray();
 				for (char c : charInOneLine) {
-					allCharInFile[index++] = c;
+					allCharInFile.add(c);
 				}
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println("File in " + path + " not found");
 			e.printStackTrace();
-			return new char[0];
 		} catch (IOException e) {
 			System.out.println("Fail to read the file");
 			e.printStackTrace();
-			return new char[0];
 		}
-		return allCharInFile;
+		scanCharInFile(allCharInFile);
 	}
 
 	/**
@@ -80,13 +77,13 @@ public class Analyser {
 	 *            读完文件并删去空格后得到的字符数组
 	 * @return
 	 */
-	public static void scanCharInFile(char[] allCharInFile) {
+	public static void scanCharInFile(ArrayList<Character> allCharInFile) {
 		// 临时容器，用以装载读取的字符串，方便识别结果的呈现
 		String tempContent = "";
 		int index = 0;
 		int currentState = 0;
-		while (index < allCharInFile.length) {
-			char currentChar = allCharInFile[index];
+		while (index < allCharInFile.size()) {
+			char currentChar = allCharInFile.get(index);
 			// 查表得无下一个可能的状态时，分error和结束两种可能
 			int nextState = lookUpStateTable(currentState, currentChar);
 			if (nextState == -1) {
@@ -101,7 +98,7 @@ public class Analyser {
 			} else {
 				currentState = nextState;
 				tempContent += String.valueOf(currentChar);
-				if (index == allCharInFile.length - 1)
+				if (index == allCharInFile.size() - 1)
 					output(currentState, tempContent);
 			}
 			index++;
@@ -128,7 +125,10 @@ public class Analyser {
 		} else if (currentChar == '-') {
 			return STATE_TABLE[currentState][3];
 		} else if (currentChar == '.') {
-			return STATE_TABLE[currentState][4];
+			if(currentState==504||currentState==508)
+				return STATE_TABLE[currentState][4];
+			else
+				return STATE_TABLE[currentState][2];
 		} else
 			return STATE_TABLE[currentState][2];
 
@@ -250,8 +250,7 @@ public class Analyser {
 	}
 
 	public static void main(String[] args) {
-		char[] test = "int int4fsdf=5.658".toCharArray();
-		Analyser.scanCharInFile(test);
+		Analyser.readFromFile("D:\\Projects\\LexicalAnalyser\\src\\lex\\Token.java");
 	}
 
 }
