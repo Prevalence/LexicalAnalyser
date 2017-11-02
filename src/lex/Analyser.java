@@ -38,7 +38,7 @@ public class Analyser {
 	 * | | | | | |
 	 * 
 	 */
-	private static final int[][] STATE_TABLE = { { 504, 501, 503, 5, -1 }, { 502, 502, -1, -1, -1 },
+	private static final int[][] STATE_TABLE = { { 504, 501, 503, 505, -1 }, { 502, 502, -1, -1, -1 },
 			{ 502, 502, -1, -1, -1 }, { -1, -1, -1, -1, -1 }, { 504, -1, -1, -1, 6 }, { 508, -1, -1, -1, -1 },
 			{ 507, -1, -1, -1, -1 }, { 507, -1, -1, -1, -1 }, { 508, -1, -1, -1, 9 }, { 510, -1, -1, -1, -1 },
 			{ 510, -1, -1, -1, -1 } };
@@ -125,7 +125,7 @@ public class Analyser {
 		} else if (currentChar == '-') {
 			return STATE_TABLE[currentState][3];
 		} else if (currentChar == '.') {
-			if(currentState==504||currentState==508)
+			if(currentState==4||currentState==8)
 				return STATE_TABLE[currentState][4];
 			else
 				return STATE_TABLE[currentState][2];
@@ -154,7 +154,7 @@ public class Analyser {
 			} else {
 				token = new Token("ID", tempContent, "none");
 			}
-		} else if (currentState == 503) {
+		} else if (currentState == 503||currentState==505) {
 			if (isOperators(tempContent)) {
 				token = new Token("Operators", tempContent, "none");
 			} else if (isPunctuation(tempContent)) {
@@ -168,7 +168,7 @@ public class Analyser {
 			token = new Token("positive Integer", tempContent, "none");
 		} else if (currentState == 507) {
 			token = new Token("positive float", tempContent, "none");
-		} else if (currentState == 505) {
+		} else if (currentState == 508) {
 			token = new Token("negative Integer", tempContent, "none");
 		} else if (currentState == 510) {
 			token = new Token("positive float", tempContent, "none");
@@ -250,7 +250,7 @@ public class Analyser {
 	}
 
 	public static void main(String[] args) {
-		Analyser.readFromFile("D:\\Projects\\LexicalAnalyser\\src\\lex\\Token.java");
+		Analyser.readFromFile("D:\\lab.txt");
 	}
 
 }
