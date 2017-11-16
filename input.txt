@@ -1,0 +1,42 @@
+public class PickPeaks {
+	public static Map<String, List<Integer>> getPeaks(int[] arr) {
+
+		HashMap<String, List<Integer>> result = new HashMap<String, List<Integer>>();
+		result.put("pos", new ArrayList<Integer>());
+		result.put("peaks", new ArrayList<Integer>());
+
+		if (arr.length <= 2)
+			return result;
+		boolean latterBigger = false;
+		boolean hasEqualValue = false;
+		int firstEqualValue = 0;
+		int firstEqualPos = 0;
+		for (int i = 0; i < arr.length - 1; i++) {
+			if (latterBigger) {
+				if (arr[i + 1] == arr[i] && (!hasEqualValue)) {
+					hasEqualValue = true;
+					firstEqualPos = i;
+					firstEqualValue = arr[i];
+				}
+				if (arr[i + 1] < arr[i]) {
+					latterBigger = false;
+					if (hasEqualValue) {
+						result.get("pos").add(firstEqualPos);
+						result.get("peaks").add(firstEqualValue);
+						hasEqualValue = false;
+					} else {
+						result.get("pos").add(i);
+						result.get("peaks").add(arr[i]);
+					}
+
+				}
+
+			}
+			if (arr[i + 1] > arr[i]) {
+				if (hasEqualValue)
+					hasEqualValue = false;
+				latterBigger = true;
+			}
+		}
+		return result;
+	}
