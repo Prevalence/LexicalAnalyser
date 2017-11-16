@@ -13,7 +13,7 @@ public class Reduction {
 	/**
 	 * 内容栈
 	 */
-	private Stack<Character> contentStack = new Stack<Character>();
+	private Stack<Token> contentStack = new Stack<Token>();
 	/**
 	 * 状态栈
 	 */
@@ -24,45 +24,17 @@ public class Reduction {
 	private static final PredictTable PPT = new PredictTable();
 
 	/**
-	 * 读入输入的文件
-	 * 
-	 * @param path
-	 *            输入文件路径
-	 * @throws IOException
-	 */
-	public void readFromFile(String path) throws IOException {
-		ArrayList<Character> allCharInFile = new ArrayList<Character>();
-		try {
-			BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path))));
-			String line = null;
-			while ((line = bf.readLine()) != null) {
-				char[] charInOneLine = line.toCharArray();
-				for (char c : charInOneLine) {
-					allCharInFile.add(c);
-				}
-			}
-		} catch (FileNotFoundException e) {
-			System.out.println("File in " + path + " not found");
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.out.println("Fail to read the file");
-			e.printStackTrace();
-		}
-		scanCharInFile(allCharInFile);
-	}
-
-	/**
 	 * 核心分析子程序
 	 * 
 	 * @param allCharInFile
 	 */
-	public void scanCharInFile(ArrayList<Character> allCharInFile) {
-		contentStack.push('$');
+	public void scanTokens(ArrayList<Token> tokens) {
+		contentStack.push(new Token("dollarR", "$R", "none"));
 		stateStack.push(0);
-		for (int i = 0; i < allCharInFile.size(); i++) {
-			char currentChar = allCharInFile.get(i);
+		for (int i = 0; i < tokens.size(); i++) {
+			Token currentToken = tokens.get(i);
 			int currentState = stateStack.peek();
-			int nextState = PPT.getNextState(currentState, currentChar);
+			int nextState = PPT.getNextState(currentState, currentToken);
 			if (nextState == -1) {
 				System.out.println("Error occurs");
 				break;
@@ -71,7 +43,7 @@ public class Reduction {
 				break;
 			} else if (nextState > 0) {
 				stateStack.push(nextState);
-				contentStack.push(currentChar);
+				contentStack.push(currentToken);
 			} else {
 				if (nextState == -501) {
 					nextState += 500;
@@ -97,9 +69,11 @@ public class Reduction {
 
 	public static void main(String[] args) {
 		Reduction r = new Reduction();
+		Analyser a = new Analyser();
 		try {
-			r.readFromFile("D:/lab.txt");
+			r.scanTokens(a.readFromFile("lab.txt"));
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

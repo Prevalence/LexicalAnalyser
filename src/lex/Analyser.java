@@ -42,6 +42,10 @@ public class Analyser {
 			{ 502, 502, -1, -1, -1 }, { -1, -1, -1, -1, -1 }, { 504, -1, -1, -1, 6 }, { 508, -1, -1, -1, -1 },
 			{ 507, -1, -1, -1, -1 }, { 507, -1, -1, -1, -1 }, { 508, -1, -1, -1, 9 }, { 510, -1, -1, -1, -1 },
 			{ 510, -1, -1, -1, -1 } };
+	/**
+	 * Token流
+	 */
+	private static ArrayList<Token> tokens = new ArrayList<Token>();
 
 	/**
 	 * 读入输入的文件
@@ -50,7 +54,7 @@ public class Analyser {
 	 *            输入文件路径
 	 * @throws IOException
 	 */
-	public static void readFromFile(String path) throws IOException {
+	public ArrayList<Token> readFromFile(String path) throws IOException {
 		ArrayList<Character> allCharInFile = new ArrayList<Character>();
 		try {
 			BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path))));
@@ -69,6 +73,7 @@ public class Analyser {
 			e.printStackTrace();
 		}
 		scanCharInFile(allCharInFile);
+		return tokens;
 	}
 
 	/**
@@ -143,7 +148,6 @@ public class Analyser {
 	 * @throws IOException
 	 */
 	private static void output(int currentState, String tempContent) throws IOException {
-		BufferedWriter out = new BufferedWriter((new FileWriter(new File("output.txt"), true)));
 		Token token = null;
 		if (currentState == 501) {
 			if (isReveredWords(tempContent)) {
@@ -181,11 +185,8 @@ public class Analyser {
 		} else if (currentState == 510) {
 			token = new Token("positive float", tempContent, "none");
 		}
+		tokens.add(token);
 
-		assert (token != null);
-		out.write("\nToken{type: " + token.getType() + "     content: " + token.getContent() + "     error: "
-				+ token.getErrorMessage() + "}");
-		out.close();
 	}
 
 	/**
@@ -256,14 +257,6 @@ public class Analyser {
 				return true;
 		}
 		return false;
-	}
-
-	public static void main(String[] args) {
-		try {
-			Analyser.readFromFile("input.txt");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 }
