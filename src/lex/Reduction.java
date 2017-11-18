@@ -49,14 +49,17 @@ public class Reduction {
 					nextState += 500;
 				}
 				int lengthOfProduct = PPT.getLengthOfProduct(nextState);
+				Token tokenAfterReduction = new Token("Reduction", "", "none");
 				for (int j = 0; j < lengthOfProduct; j++) {
 					stateStack.pop();
+					tokenAfterReduction.setContent(contentStack.peek() + tokenAfterReduction.getContent());
 					contentStack.pop();
 				}
-				contentStack.push(PPT.getLeftPartOfProduct(currentState));
-				char topContent = contentStack.peek();
+				tokenAfterReduction.setType(String.valueOf(PPT.getLeftPartOfProduct(currentState)));
+				contentStack.push(tokenAfterReduction);
+				Token topToken = contentStack.peek();
 				int topState = stateStack.peek();
-				nextState = PPT.getNextState(topState, topContent);
+				nextState = PPT.getNextState(topState, topToken);
 				if (nextState == -1) {
 					System.out.println("Error occurs");
 					break;
@@ -73,7 +76,6 @@ public class Reduction {
 		try {
 			r.scanTokens(a.readFromFile("lab.txt"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

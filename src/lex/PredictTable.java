@@ -40,12 +40,12 @@ public class PredictTable {
 	 * (0) S’→S (1) S→if(C){S} (2) S→while(C){S} (3) S→id=A (4) A→digit (5)
 	 * A→id+digit (6) C→A>digit (7) C→A<digit 产生式右部长度
 	 */
-	private int[] lengthOfProducts = { 1, 7, 3, 3, 3, 3, 3, 3, 3, 2, 2 };
+	private int[] lengthOfProducts = { 1, 7, 7, 3, 1, 3, 3, 3 };
 
 	/**
 	 * 产生式左部符号
 	 */
-	private char[] leftPartOfProduct = { 'S', 'S', 'S', 'E', 'E', 'E', 'E', 'C', 'C', 'A', 'B' };
+	private char[] leftPartOfProduct = { 'S', 'S', 'S', 'S', 'A', 'A', 'C', 'C' };
 
 	public int getLengthOfProduct(int indexOfProduct) {
 		return lengthOfProducts[-indexOfProduct];
@@ -56,13 +56,56 @@ public class PredictTable {
 	}
 
 	/**
-	 * 查表
+	 * 查表 // (, ), {, }, <, >, if,while,id,digit,+, =, $R, S, A, C
 	 * 
 	 * @return
 	 */
 	public int getNextState(int currentState, Token currentToken) {
-		int index = 0;
-
-		return stateTable[currentState][index];
+		String type = currentToken.getType();
+		switch (type) {
+		case "S":
+			return stateTable[currentState][13];
+		case "A":
+			return stateTable[currentState][14];
+		case "C":
+			return stateTable[currentState][15];
+		case "ID":
+			return stateTable[currentState][8];
+		case "positive Integer":
+			return stateTable[currentState][9];
+		case "positive float":
+			return stateTable[currentState][9];
+		default:
+			break;
+		}
+		String content = currentToken.getContent();
+		switch (content) {
+		case "(":
+			return stateTable[currentState][0];
+		case ")":
+			return stateTable[currentState][1];
+		case "{":
+			return stateTable[currentState][2];
+		case "}":
+			return stateTable[currentState][3];
+		case "<":
+			return stateTable[currentState][4];
+		case ">":
+			return stateTable[currentState][5];
+		case "if":
+			return stateTable[currentState][6];
+		case "while":
+			return stateTable[currentState][7];
+		case "+":
+			return stateTable[currentState][10];
+		case "=":
+			return stateTable[currentState][11];
+		case "$R":
+			return stateTable[currentState][12];
+		default:
+			break;
+		}
+		System.out.println("Can't find the column");
+		return -1;
 	}
 }
